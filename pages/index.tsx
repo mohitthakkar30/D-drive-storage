@@ -4,13 +4,14 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import lighthouse from "@lighthouse-web3/sdk";
 import { Web3Storage } from "web3.storage";
-import { useState } from "react";
-import getResponse from "./Dynamictable"
+import { useState, useEffect } from "react";
+import getResponse from "./Dynamictable";
 import { getDisplayName } from "next/dist/shared/lib/utils";
+import axios from "axios";
 
 const Home: NextPage = () => {
-
   const [uploadedFiles, setUploadedFiles] = useState<any>([]);
+  const [result, setResult] = useState({ data: "", loading: true });
 
   function getAccessToken() {
     console.log(process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN);
@@ -85,14 +86,12 @@ const Home: NextPage = () => {
     return cid;
   };
   // const data: any = ["test1","test2","test3"];
-  const data:any = []
+  const data: any = [];
 
-  const response:any = {
-    result:[
-
-    ]
-  }
-
+  const response: any = {
+    result: [],
+  };
+  var tableCode = `<tr><th>Name</th><th>Links</th></tr>`;
   const getFiles = () => {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -105,73 +104,52 @@ const Home: NextPage = () => {
 
     for (let i = 0; i < data.length; i++) {
       const key = data[i];
-      response.result.push({"key":key,"link":localStorage.getItem(key)})
-      console.log(`${key}: ${localStorage.getItem(key)}`);
+      response.result.push({ key: key, link: localStorage.getItem(key) });
+      console.log(`${key}: ${localStorage.getItem("MyDrive " + key)}`);
+      tableCode =
+        tableCode +
+        `<tr><td>${key}</td><td><p><a href="${localStorage.getItem(
+          "MyDrive " + key
+        )}" target="_blank" rel="noopener noreferrer">${localStorage.getItem(
+          "MyDrive " + key
+        )}</a></p></td></tr>`;
     }
-    //console.log("getResponse ==> ",getResponse);
-    const column = response.result;
-    console.log("***",column);
-    const ThData = () => {
-      return column.map((data)=>{
-        return <tr> <th key={data.key}>{data.key}</th><th key={data.link}>{data.link}</th></tr> //<th key={data.link}>{data.link}</th>
-      })
-    }
-    const tdData = () => {
-      return response.result.map((data)=>{
-        return (
-          <tr>
-            {column.map((cData)=>{
-              return <td>{data[cData]}</td>
-            })}
-          </tr>
-        )
-      })
-    } 
-    const demo = ThData();
 
-    console.log("ThDAta",demo); 
+    //console.log("getResponse ==> ",getResponse);
+    const column = tableCode;
+    setResult({ data: column, loading: false });
+    console.log(tableCode);
+
     return response;
 
     // setState({list:response.result})
-    
   };
-  
-
 
   // let response = list.map((item)=>{return (<tr><td>{item.key}</td></tr>)})
-  
+
   return (
-   
-      <div className={styles.container}>
-        <main className={styles.main}>
-          <ConnectButton />
+    <div className={styles.container}>
+      <main className={styles.main}>
+        <ConnectButton />
+        <br></br>
+        <div>
+          <input type="file" />
+
+          <input type="text" id="fileName" placeholder="Name of your file" />
+          <button type="submit" onClick={uploadFiles}>
+            {" "}
+            Upload
+          </button>
+          <button type="submit" onClick={getFiles}>
+            Get Files
+          </button>
           <br></br>
-         <div>
-         <input type="file" />
-          
-         <input type="text" id="fileName" placeholder="Name of your file" />
-        
-         <button type="submit" onClick={getFiles}>
-       Upload
-     </button>
-     
-         </div>
-         <br></br>
-         <table>
-          <tbody>
-          <tr> <th key={data.key}>{data.key}</th><th key={data.link}>{data.link}</th></tr>
-
-          </tbody>
-         </table>
-
-        
-
-        </main>
-      </div>
-
-    
+          <br></br>
+          <table dangerouslySetInnerHTML={{ __html: result.data }}></table>
+        </div>
+      </main>
+    </div>
   );
-}
-
+};
 
 export default Home;
