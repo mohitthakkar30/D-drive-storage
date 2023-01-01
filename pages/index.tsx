@@ -73,16 +73,25 @@ const Home: NextPage = () => {
   // }
   const uploadFiles = async function storeFiles() {
     const fileInput = document.querySelector('input[type="file"]');
-    const name: any = document.getElementById("fileName").value;
-    console.log("name ==>", name);
+    try{
+      // @ts-ignore: Object is possibly 'null'
+      const name: any = document.getElementById("fileName").value;
+      console.log("name ==>", name);
+      // @ts-ignore: Object is possibly 'null'
+      const files: any = fileInput.files;
+      const client = makeStorageClient();
+      const cid = await client.put(files);
+      console.log("stored files with cid:", cid);
+      localStorage.setItem("MyDrive " + name, cid + ".ipfs.w3s.link");
+  
+      return cid;
 
-    const files: any = fileInput.files;
-    const client = makeStorageClient();
-    const cid = await client.put(files);
-    console.log("stored files with cid:", cid);
-    localStorage.setItem("MyDrive " + name, cid + ".ipfs.w3s.link");
-
-    return cid;
+    }catch(e)
+    {
+      console.log(e);
+      
+    }
+   
   };
   // const data: any = ["test1","test2","test3"];
   const data: any = [];
