@@ -4,9 +4,7 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { Web3Storage } from "web3.storage";
 import { useState, useEffect } from "react";
-import getResponse from "./Dynamictable";
-import { getDisplayName } from "next/dist/shared/lib/utils";
-import axios from "axios";
+
 
 const Home: NextPage = () => {
   const [uploadedFiles, setUploadedFiles] = useState<any>([]);
