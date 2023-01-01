@@ -2,7 +2,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import lighthouse from "@lighthouse-web3/sdk";
 import { Web3Storage } from "web3.storage";
 import { useState, useEffect } from "react";
 import getResponse from "./Dynamictable";
