@@ -128,26 +128,34 @@ const Home: NextPage = () => {
   // let response = list.map((item)=>{return (<tr><td>{item.key}</td></tr>)})
 
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <ConnectButton />
-        <br></br>
-        <div>
-          <input type="file" />
+    <div className={styles.common}>
+      <div className={styles.left}>
+        <h1>Easy and secure access to your content</h1>
+        {/* <h1>Store data permanently</h1> */}
+      </div>
+      <div className={styles.container}>
+        <main className={styles.main}>
+          <ConnectButton />
 
-          <input type="text" id="fileName" placeholder="Name of your file" />
-          <button type="submit" onClick={uploadFiles}>
-            {" "}
-            Upload
-          </button>
-          <button type="submit" onClick={getFiles}>
-            Get Files
-          </button>
           <br></br>
-          <br></br>
-          <table dangerouslySetInnerHTML={{ __html: result.data }}></table>
-        </div>
-      </main>
+          <div>
+            <input type="file" />
+
+            <input type="text" className={styles.text_input} id="fileName" placeholder="Give name to your file" />
+            <button type="submit" onClick={uploadFiles}>
+              {" "}
+              Upload
+            </button>
+            
+            <button type="submit" onClick={getFiles}>
+              Get Files
+            </button>
+            <br></br>
+            <br></br>
+            <table dangerouslySetInnerHTML={{ __html: result.data }}></table>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
