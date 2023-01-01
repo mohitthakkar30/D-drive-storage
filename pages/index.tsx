@@ -56,16 +56,16 @@ const Home: NextPage = () => {
     setUploadedFiles(e);
   };
 
-  const uploadedFile = async (uploadedFiles: any) => {
-    console.log("first", uploadedFiles);
+  // const uploadedFile = async (uploadedFiles: any) => {
+  //   console.log("first", uploadedFiles);
 
-    uploadedFiles.persist();
-    const uploadResponse = await lighthouse.upload(
-      uploadedFiles,
-      "e425247e-3e3e-4773-9d9a-5ae216ce5b3a"
-    );
-    return uploadResponse;
-  };
+  //   uploadedFiles.persist();
+  //   const uploadResponse = await lighthouse.upload(
+  //     uploadedFiles,
+  //     "e425247e-3e3e-4773-9d9a-5ae216ce5b3a"
+  //   );
+  //   return uploadResponse;
+  // };
 
   // const files = function getFiles () {
   //   const fileInput = document.querySelector('input[type="file"]')
