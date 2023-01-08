@@ -11,13 +11,13 @@ const Home: NextPage = () => {
   const [result, setResult] = useState({ data: "", loading: true });
 
   function getAccessToken() {
-    console.log(process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN);
+    // console.log(process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN);
     return process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN;
   }
 
   function makeStorageClient() {
     const accessToken = getAccessToken() as string;
-    console.log("accessToken", accessToken);
+    // console.log("accessToken", accessToken);
     return new Web3Storage({ token: accessToken });
   }
 
