@@ -21,30 +21,6 @@ const Home: NextPage = () => {
     return new Web3Storage({ token: accessToken });
   }
 
-  const onSubmit = async (values: any) => {
-    let uploadResponse;
-    if (uploadedFiles?.target?.files.length > 0) {
-      uploadResponse = await uploadedFiles(uploadedFiles);
-      console.log("uploadResponse", uploadResponse);
-    }
-
-    values.file = uploadResponse?.data?.Hash;
-    console.log("valuesssss", values);
-    const client = makeStorageClient();
-    const obj = {
-      name: values.name,
-      description: values.description,
-      category: values.category,
-      // thumbnail: values.img,
-    };
-    const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
-
-    const files = [new File([blob], "metadata.json")];
-    console.log(files);
-    const metadata_cid = await client.put(files);
-
-    console.log("stored files with cid:", metadata_cid);
-  };
   const inputType = (uploadType: any) => {
     uploadType === "file" && document.getElementById("file")?.click();
     uploadType === "folder" && document.getElementById("folder")?.click();
@@ -54,21 +30,6 @@ const Home: NextPage = () => {
     setUploadedFiles(e);
   };
 
-  // const uploadedFile = async (uploadedFiles: any) => {
-  //   console.log("first", uploadedFiles);
-
-  //   uploadedFiles.persist();
-  //   const uploadResponse = await lighthouse.upload(
-  //     uploadedFiles,
-  //     "e425247e-3e3e-4773-9d9a-5ae216ce5b3a"
-  //   );
-  //   return uploadResponse;
-  // };
-
-  // const files = function getFiles () {
-  //   const fileInput = document.querySelector('input[type="file"]')
-  //   return fileInput.files
-  // }
   const uploadFiles = async function storeFiles() {
     const fileInput = document.querySelector('input[type="file"]');
     try{
@@ -81,8 +42,9 @@ const Home: NextPage = () => {
       const cid = await client.put(files);
       console.log("stored files with cid:", cid);
       localStorage.setItem("MyDrive " + name, cid + ".ipfs.w3s.link");
-  
+      getFiles()
       return cid;
+     
 
     }catch(e)
     {
@@ -91,13 +53,13 @@ const Home: NextPage = () => {
     }
    
   };
-  // const data: any = ["test1","test2","test3"];
   const data: any = [];
 
   const response: any = {
     result: [],
   };
   var tableCode = `<tr><th>Name</th><th>Links</th></tr>`;
+  
   const getFiles = () => {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -121,17 +83,13 @@ const Home: NextPage = () => {
         )}</a></p></td></tr>`;
     }
 
-    //console.log("getResponse ==> ",getResponse);
     const column = tableCode;
     setResult({ data: column, loading: false });
     console.log(tableCode);
 
     return response;
 
-    // setState({list:response.result})
   };
-
-  // let response = list.map((item)=>{return (<tr><td>{item.key}</td></tr>)})
 
   return (
     <div className={styles.common}>
