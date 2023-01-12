@@ -4,7 +4,11 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { Web3Storage } from "web3.storage";
 import { useState, useEffect } from "react";
-
+import CryptoJS from 'crypto-js';
+import ABI from "../abi/driveABI";
+import { ethers, Signer } from "ethers";
+import { fetchSigner } from '@wagmi/core';
+import { useAccount } from "wagmi";
 
 const Home: NextPage = () => {
   const [uploadedFiles, setUploadedFiles] = useState<any>([]);
@@ -35,21 +39,19 @@ const Home: NextPage = () => {
     try{
       // @ts-ignore: Object is possibly 'null'
       const name: any = document.getElementById("fileName").value;
-      console.log("name ==>", name);
       // @ts-ignore: Object is possibly 'null'
       const files: any = fileInput.files;
       const client = makeStorageClient();
       const cid = await client.put(files);
       console.log("stored files with cid:", cid);
       localStorage.setItem("MyDrive " + name, cid + ".ipfs.w3s.link");
+      encryption(cid+".ipfs.w3s.link", name)
       getFiles()
       return cid;
      
 
-    }catch(e)
-    {
-      console.log(e);
-      
+    }catch(e){
+      console.log(e);      
     }
    
   };
@@ -66,14 +68,12 @@ const Home: NextPage = () => {
       if (key?.includes("MyDrive")) {
         var res = key.split(" ");
         data.push(res[1]);
-        console.log("Data ==> ", data);
       }
     }
 
     for (let i = 0; i < data.length; i++) {
       const key = data[i];
       response.result.push({ key: key, link: localStorage.getItem(key) });
-      console.log(`${key}: ${localStorage.getItem("MyDrive " + key)}`);
       tableCode =
         tableCode +
         `<tr><td>${key}</td><td><p><a href="${localStorage.getItem(
@@ -85,11 +85,53 @@ const Home: NextPage = () => {
 
     const column = tableCode;
     setResult({ data: column, loading: false });
-    console.log(tableCode);
-
     return response;
 
   };
+
+  function getKey(){
+    return process.env.NEXT_PUBLIC_KEY;
+  }
+  const { address} = useAccount();
+  const encryption = async (link:any, fileName:any)=> {
+    // @ts-ignore: Object is possibly 'undefined'
+    const key:string = getKey();
+    var encrypted = CryptoJS.AES.encrypt(link, key);
+    console.log("Encrypted - ", encrypted.toString());
+    const encryptResut = encrypted.toString();
+    const contractAddress = "0x3D8a5f1921d9E4E672bB3b45d706e500F677ca17";
+    const signer:any = await fetchSigner();  
+    const contract = new ethers.Contract(contractAddress,ABI,signer)
+    await contract.setter(address, encryptResut, fileName);
+    
+  }
+
+  const decryption = async(address:any)=>{
+    const contractAddress = "0x3D8a5f1921d9E4E672bB3b45d706e500F677ca17";
+    const signer:any = await fetchSigner();  
+    const contract = new ethers.Contract(contractAddress,ABI,signer)
+   // @ts-ignore: Object is possibly 'undefined'
+    const key:string = getKey();
+    try{
+      const encrypted = await contract.getLink(address);
+      console.log("ENCRYPTED =>", encrypted);
+      const response = [];
+      for(let i=0;i<encrypted.length;i++){
+        let decrypted = CryptoJS.AES.decrypt(encrypted[i], key);
+        response.push(decrypted.toString(CryptoJS.enc.Utf8));
+        // console.log("decrypted from contract = ",decrypted.toString(CryptoJS.enc.Utf8));
+      }
+      console.log("Res ",res);
+      
+    }catch(e){
+      // alert(e)
+      console.log(e);
+      
+    }
+  }
+  const res = ()=>{
+    decryption(address)
+  }
 
   return (
     <div className={styles.common}>
@@ -111,7 +153,7 @@ const Home: NextPage = () => {
               Upload
             </button>
             
-            <button type="submit" onClick={getFiles}>
+            <button type="submit" onClick={res}>
               Get Files
             </button>
             <br></br>
