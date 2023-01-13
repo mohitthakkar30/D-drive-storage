@@ -1,3 +1,4 @@
+
 .container {
   padding: 0 2rem;
   /* background-color: red; */
@@ -11,6 +12,55 @@
   align-items: center;
   justify-content: center;
 }
+.h1{
+
+  display: block;
+  font-size: 2em;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+  line-height: 55px;
+  font-family: Google Sans Display,Arial,Helvetica,sans-serif;
+
+}
+
+.tab{
+  margin: 10px;
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  
+}
+
+/* td, th {
+  border: 2px solid #0d0707;
+  text-align: center;
+  padding: 8px;
+  border-width: 1;
+} */
+.newbtn{
+  margin-left: 5px;
+  background: rgb(238,174,202);
+  background: linear-gradient(90deg, rgb(241, 137, 182) 0%, rgb(125, 177, 237) 100%);
+  background-position-x: 0%;
+  background-size: 200%;
+  border: 0;
+  border-radius: 8px;
+  color: black;
+  padding: 1rem 1.25rem;
+  text-shadow: 0 1px 1px #333;
+  transition: all 0.25s;
+}
+/* .update{
+  background-color: yellow;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 20vh;
+  width: 50vw;
+} */
 
 .common{
   display: flex;
@@ -18,6 +68,7 @@
   flex-direction: row;
   
 }
+
 .left{
   /* height: 45%; */
   width: 45%;
@@ -26,15 +77,16 @@
   font-size: 30px;
   line-height: 55px;
   font-family: "Google Sans Display",Arial,Helvetica,sans-serif;
-  display: flex;
-  flex-direction: row;
+   display: flex;
+  flex-direction: row; 
+  color: black;
+  /* background-color: aqua; */
+  /* font-style: bold; */
+  
   justify-content: center;
   /* margin-top: 10px; */
   min-height: 100vh;
-  padding: 100px;
-
-  
-
+  padding: 100px; 
 }
 
 .text_input{

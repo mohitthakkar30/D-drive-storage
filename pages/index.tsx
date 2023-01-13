@@ -4,13 +4,17 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { Web3Storage } from "web3.storage";
 import { useState, useEffect } from "react";
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 import ABI from "../abi/driveABI";
 import { ethers, Signer } from "ethers";
-import { fetchSigner } from '@wagmi/core';
+import { fetchSigner } from "@wagmi/core";
 import { useAccount } from "wagmi";
+import Spinner from "react-bootstrap/Spinner";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Home: NextPage = () => {
+  const [updating, setUpdating] = useState(false);
+
   const [uploadedFiles, setUploadedFiles] = useState<any>([]);
   const [result, setResult] = useState({ data: "", loading: true });
 
@@ -36,24 +40,24 @@ const Home: NextPage = () => {
 
   const uploadFiles = async function storeFiles() {
     const fileInput = document.querySelector('input[type="file"]');
-    try{
+    try {
+      setUpdating(true);
       // @ts-ignore: Object is possibly 'null'
       const name: any = document.getElementById("fileName").value;
       // @ts-ignore: Object is possibly 'null'
       const files: any = fileInput.files;
       const client = makeStorageClient();
       const cid = await client.put(files);
-      console.log("stored files with cid:", cid);
-      localStorage.setItem("MyDrive " + name, cid + ".ipfs.w3s.link");
-      encryption(cid+".ipfs.w3s.link", name)
-      getFiles()
-      return cid;
-     
 
-    }catch(e){
-      console.log(e);      
+      localStorage.setItem("MyDrive " + name, cid + ".ipfs.w3s.link");
+      await encryption(cid + ".ipfs.w3s.link", name);
+      getFiles();
+      return cid;
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setUpdating(false);
     }
-   
   };
   const data: any = [];
 
@@ -61,7 +65,7 @@ const Home: NextPage = () => {
     result: [],
   };
   var tableCode = `<tr><th>Name</th><th>Links</th></tr>`;
-  
+
   const getFiles = () => {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -86,57 +90,54 @@ const Home: NextPage = () => {
     const column = tableCode;
     setResult({ data: column, loading: false });
     return response;
-
   };
 
-  function getKey(){
+  function getKey() {
     return process.env.NEXT_PUBLIC_KEY;
   }
-  const { address} = useAccount();
-  const encryption = async (link:any, fileName:any)=> {
+  const { address } = useAccount();
+  const encryption = async (link: any, fileName: any) => {
     // @ts-ignore: Object is possibly 'undefined'
-    const key:string = getKey();
+    const key: string = getKey();
     var encrypted = CryptoJS.AES.encrypt(link, key);
-    console.log("Encrypted - ", encrypted.toString());
+
     const encryptResut = encrypted.toString();
     const contractAddress = "0x3D8a5f1921d9E4E672bB3b45d706e500F677ca17";
-    const signer:any = await fetchSigner();  
-    const contract = new ethers.Contract(contractAddress,ABI,signer)
+    const signer: any = await fetchSigner();
+    const contract = new ethers.Contract(contractAddress, ABI, signer);
     await contract.setter(address, encryptResut, fileName);
-    
-  }
+  };
 
-  const decryption = async(address:any)=>{
+  const decryption = async (address: any) => {
     const contractAddress = "0x3D8a5f1921d9E4E672bB3b45d706e500F677ca17";
-    const signer:any = await fetchSigner();  
-    const contract = new ethers.Contract(contractAddress,ABI,signer)
-   // @ts-ignore: Object is possibly 'undefined'
-    const key:string = getKey();
-    try{
+    const signer: any = await fetchSigner();
+    const contract = new ethers.Contract(contractAddress, ABI, signer);
+    // @ts-ignore: Object is possibly 'undefined'
+    const key: string = getKey();
+    try {
       const encrypted = await contract.getLink(address);
-      console.log("ENCRYPTED =>", encrypted);
       const response = [];
-      for(let i=0;i<encrypted.length;i++){
+      for (let i = 0; i < encrypted.length; i++) {
         let decrypted = CryptoJS.AES.decrypt(encrypted[i], key);
         response.push(decrypted.toString(CryptoJS.enc.Utf8));
-        // console.log("decrypted from contract = ",decrypted.toString(CryptoJS.enc.Utf8));
       }
-      console.log("Res ",res);
-      
-    }catch(e){
+      console.log("Response  ", response);
+    } catch (e) {
       // alert(e)
       console.log(e);
-      
     }
-  }
-  const res = ()=>{
-    decryption(address)
-  }
+  };
+  const res = () => {
+    decryption(address);
+  };
 
   return (
     <div className={styles.common}>
       <div className={styles.left}>
-        <h1>Easy and secure access to your content</h1>
+        <div className={styles.h1}>
+          <p >Easy and secure access to your content</p>
+        </div>
+        
         {/* <h1>Store data permanently</h1> */}
       </div>
       <div className={styles.container}>
@@ -145,20 +146,30 @@ const Home: NextPage = () => {
 
           <br></br>
           <div>
-            <input type="file" />
+            <div>
+              <input type="file" />
+              <br></br>
+              <input
+                type="text"
+                className={styles.text_input}
+                id="fileName"
+                placeholder="Give name to your file"
+              />
+              <button type="submit" className={styles.newbtn} onClick={uploadFiles} disabled={updating}>
+                <span>
+                  {updating ? <Spinner animation="border"></Spinner> : "Upload"}
+                </span>
+              </button>
 
-            <input type="text" className={styles.text_input} id="fileName" placeholder="Give name to your file" />
-            <button type="submit" onClick={uploadFiles}>
-              {" "}
-              Upload
-            </button>
-            
-            <button type="submit" onClick={res}>
-              Get Files
-            </button>
+              <button type="submit"  className={styles.newbtn} onClick={res}>
+                Get Files
+              </button>
+            </div>
             <br></br>
             <br></br>
-            <table dangerouslySetInnerHTML={{ __html: result.data }}></table>
+            <div className={styles.tab}>
+            <table dangerouslySetInnerHTML={{ __html: result.data }} ></table>
+            </div>
           </div>
         </main>
       </div>
