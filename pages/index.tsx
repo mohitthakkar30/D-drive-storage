@@ -98,7 +98,7 @@ const Home: NextPage = () => {
   const { address } = useAccount();
   const encryption = async (link: any, fileName: any) => {
     // @ts-ignore: Object is possibly 'undefined'
-    const key: string = getKey();
+    const key: string = address;
     var encrypted = CryptoJS.AES.encrypt(link, key);
 
     const encryptResut = encrypted.toString();
@@ -113,9 +113,9 @@ const Home: NextPage = () => {
     const signer: any = await fetchSigner();
     const contract = new ethers.Contract(contractAddress, ABI, signer);
     // @ts-ignore: Object is possibly 'undefined'
-    const key: string = getKey();
+    const key: string = address;
     try {
-      const encrypted = await contract.getLink(address);
+      const encrypted = await contract.getLink(address);  
       const response = [];
       for (let i = 0; i < encrypted.length; i++) {
         let decrypted = CryptoJS.AES.decrypt(encrypted[i], key);
